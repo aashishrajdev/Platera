@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* Luxury Theme Colors */
+    --color-sepia: #a68968;
+    --color-amber: #f59e0b;
+    --color-stone: #292524;
+    --color-stone-dark: #1c1917;
+
+    /* Background - Warm dark */
+    --background: #1c1917;
+    --foreground: #fafaf9;
+
+    /* Spacing scale */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+
+    /* Typography */
+    --font-display: 'Playfair Display', serif;
+    --font-sans: 'Inter', sans-serif;
+
+    /* Animation timing */
+    --duration-instant: 150ms;
+    --duration-fast: 300ms;
+    --duration-normal: 500ms;
+    --duration-slow: 700ms;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #1c1917;
+        --foreground: #fafaf9;
+    }
+}
+
+body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: var(--font-sans), 'Inter', Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar - premium styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1c1917;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #44403c;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #57534e;
+}
+
+@layer base {
+
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    p {
+        line-height: 1.625;
+    }
+}
+
+@layer components {
+
+    /* Premium button styles with depth */
+    .btn-primary {
+        @apply px-6 py-3 bg-gradient-to-br from-amber-600 via-amber-600 to-amber-700 text-white font-medium rounded-xl shadow-lg shadow-amber-900/30 hover:shadow-xl hover:shadow-amber-900/40 hover:from-amber-500 hover:via-amber-600 hover:to-amber-700 transition-all duration-300;
+    }
+
+    .btn-secondary {
+        @apply px-6 py-3 border border-stone-700/60 text-stone-200 font-medium rounded-xl bg-gradient-to-b from-stone-900/40 to-stone-900/60 backdrop-blur-md shadow-md shadow-stone-950/30 hover:bg-gradient-to-b hover:from-stone-800/50 hover:to-stone-800/70 hover:border-stone-600/70 hover:shadow-lg hover:shadow-stone-950/40 transition-all duration-300;
+    }
+
+    .btn-ghost {
+        @apply px-4 py-2 text-stone-400 hover:text-stone-200 hover:bg-gradient-to-b hover:from-stone-800/30 hover:to-stone-800/50 rounded-lg transition-all duration-200;
+    }
+
+    /* Premium card with elevation */
+    .card-luxury {
+        @apply bg-gradient-to-br from-stone-900/50 via-stone-900/60 to-stone-950/80 border border-stone-800/50 rounded-2xl backdrop-blur-md shadow-2xl shadow-stone-950/60;
+    }
+
+    /* Frosted glass effect with depth */
+    .glass {
+        @apply bg-gradient-to-b from-stone-900/30 via-stone-900/40 to-stone-900/50 backdrop-blur-xl border border-stone-800/40 shadow-lg shadow-stone-950/30;
+    }
+
+    /* Elevated card on hover */
+    .card-elevated {
+        @apply transition-all duration-300;
+    }
+
+    .card-elevated:hover {
+        @apply -translate-y-2 shadow-2xl shadow-stone-950/70;
+    }
+
+    /* Glow effect for premium elements */
+    .glow-amber {
+        @apply shadow-lg shadow-amber-600/20;
+    }
+
+    .glow-amber-hover:hover {
+        @apply shadow-xl shadow-amber-600/30;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    /* Premium gradients with depth */
+    .bg-warm-gradient {
+        background: linear-gradient(to bottom, #292524, #1c1917, #0c0a09);
+    }
+
+    .bg-warm-radial {
+        background: radial-gradient(circle at top, rgba(245, 158, 11, 0.05), transparent 60%);
+    }
+
+    /* Soft elevation shadows */
+    .elevation-1 {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .elevation-2 {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .elevation-3 {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24), 0 4px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Warm glow shadows */
+    .shadow-warm {
+        box-shadow: 0 8px 24px rgba(41, 37, 36, 0.3), 0 2px 6px rgba(28, 25, 23, 0.2);
+    }
+
+    .shadow-amber-glow {
+        box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15), 0 2px 8px rgba(217, 119, 6, 0.1);
+    }
+
+    /* Glass morphism utilities */
+    .glass-light {
+        background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-dark {
+        background: linear-gradient(to bottom right, rgba(41, 37, 36, 0.6), rgba(28, 25, 23, 0.8));
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(120, 113, 108, 0.2);
+    }
+}

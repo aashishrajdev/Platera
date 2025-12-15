@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ====================================
+// ENUMS
+// ====================================
+
+enum RecipeCategory {
+  VEG
+  NON_VEG
+  EGG
+}
+
+// ====================================
+// MODELS
+// ====================================
+
+model User {
+  id           String   @id @default(cuid())
+  clerkId      String   @unique
+  email        String   @unique
+  name         String
+  profileImage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  recipes  Recipe[]
+  reviews  Review[]
+  comments Comment[]
+
+  @@index([clerkId])
+  @@index([email])
+  @@map("users")
+}
+
+model Recipe {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  category    RecipeCategory
+  servings    Int
+  totalTime   Int // in minutes
+  ingredients Json // Array of ingredient objects
+  steps       Json // Array of step strings
+  images      Json // Array of Cloudinary URLs
+  authorId    String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reviews  Review[]
+  comments Comment[]
+
+  @@index([authorId])
+  @@index([category])
+  @@index([createdAt])
+  @@map("recipes")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int // 1-5
+  comment   String?
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@unique([userId, recipeId], name: "unique_user_recipe_review")
+  @@index([recipeId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("comments")
+}
