@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ChevronRight, Sparkles, Star, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChefHat } from 'lucide-react';
 import Link from 'next/link';
 
 import FeaturedRecipeCarousel from '@/components/hero/FeaturedRecipeCarousel';
@@ -57,8 +57,8 @@ export default function Home() {
                                 transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-900/60 border border-stone-700/30 backdrop-blur-sm mb-12 shadow-sm"
                             >
-                                <Sparkles className="w-4 h-4 text-brand-500" />
-                                <span className="text-sm text-stone-400 font-medium">Curated with Excellence</span>
+                                <ChefHat className="w-4 h-4 text-brand-500" />
+                                <span className="text-sm text-stone-400 font-medium">Chosen with Taste</span>
                             </motion.div>
 
                             {/* Main heading - calm entrance */}
@@ -83,7 +83,7 @@ export default function Home() {
                                     transition={{ duration: 0.6, delay: 0.8 }}
                                     className="text-xl md:text-2xl text-stone-300 font-light max-w-2xl"
                                 >
-                                    Discover exquisite recipes
+                                    Recipes That Deserve Your Time
                                 </motion.p>
                                 <motion.p
                                     initial={{ opacity: 0, x: -20 }}
@@ -91,7 +91,7 @@ export default function Home() {
                                     transition={{ duration: 0.6, delay: 1.0 }}
                                     className="text-lg md:text-xl text-stone-500 max-w-xl"
                                 >
-                                    crafted by passionate chefs around the world
+                                    Shared by people who love to cook
                                 </motion.p>
                             </div>
 
@@ -163,7 +163,7 @@ export default function Home() {
                                         <div className="absolute inset-0 shadow-lg shadow-black/20 group-hover:shadow-xl group-hover:shadow-black/30 rounded-xl transition-shadow duration-500" />
 
                                         <span className="relative text-stone-300 group-hover:text-stone-100 transition-colors duration-300">
-                                            Share Yours
+                                            Add a Recipe
                                         </span>
                                     </motion.div>
                                 </Link>

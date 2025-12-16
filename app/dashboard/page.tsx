@@ -80,7 +80,7 @@ export default function DashboardPage() {
 
     if (!isLoaded || loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-900 to-black flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-neutral-950 to-stone-950 flex items-center justify-center">
                 <motion.div
                     animate={{ opacity: [0.5, 1, 0.5] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -94,7 +94,7 @@ export default function DashboardPage() {
 
     if (!user) {
         return (
-            <div className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-900 to-black flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-neutral-950 to-stone-950 flex items-center justify-center">
                 <div className="text-center space-y-6">
                     <ChefHat className="w-16 h-16 mx-auto text-neutral-700" />
                     <h1 className="text-3xl font-bold text-neutral-300">Please sign in</h1>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
 
     return (
         <PageTransition>
-            <div className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-900 to-black">
+            <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-neutral-950 to-stone-950">
                 {/* Header */}
                 <section className="border-b border-neutral-800/50 bg-neutral-900/50 backdrop-blur-lg">
                     <div className="container mx-auto px-4 py-8">

@@ -71,15 +71,15 @@ export default function ExplorePage() {
     };
 
     return (
-        <div className="min-h-screen bg-black pt-24">
+        <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-neutral-950 to-stone-950">
             {/* Header */}
-            <section className="border-b border-stone-800/50 bg-gradient-to-b from-stone-950 to-black">
-                <div className="container mx-auto px-4 py-12">
+            <section className="border-b border-stone-800/50 pt-24 pb-12">
+                <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto space-y-6">
                         {/* Title */}
                         <div className="text-center space-y-2">
                             <h1 className="text-4xl md:text-5xl font-display font-bold text-white">
-                                Explore Recipes
+                                Explore Creations
                             </h1>
                             <p className="text-stone-400">
                                 Discover recipes shared by the community
