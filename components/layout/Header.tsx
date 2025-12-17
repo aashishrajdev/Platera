@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useUser, UserButton } from '@clerk/nextjs';
+import { ChevronLeft } from 'lucide-react';
 
 const navLinks = [
     { href: '/explore', label: 'Explore' },
@@ -22,41 +23,34 @@ export function Header() {
     const [lastScrollTime, setLastScrollTime] = useState(Date.now());
     const [isAtTop, setIsAtTop] = useState(true);
 
+    // Check if we are on a recipe details page (e.g. /explore/RECIPE_ID)
+    const isRecipePage = pathname?.startsWith('/explore/') && pathname.split('/').length > 2;
+
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious() ?? 0;
-
-        // Update last scroll time
         setLastScrollTime(Date.now());
-
-        // Check if at top of page
         const atTop = latest < 100;
         setIsAtTop(atTop);
 
-        // If at top, always show nav
         if (atTop) {
             setHideNav(false);
         } else {
-            // Hide nav when scrolling down past 100px
             if (latest > previous && latest > 100) {
                 setHideNav(true);
             } else {
                 setHideNav(false);
             }
         }
-
         setHasScrolled(latest > 20);
     });
 
-    // Auto-hide nav after 3 seconds of no scrolling (only when not at top)
     useEffect(() => {
-        if (isAtTop) return; // Don't auto-hide when at top
-
+        if (isAtTop) return;
         const interval = setInterval(() => {
             if (!hideNav && Date.now() - lastScrollTime > 3000) {
                 setHideNav(true);
             }
         }, 500);
-
         return () => clearInterval(interval);
     }, [hideNav, lastScrollTime, isAtTop]);
 
@@ -69,21 +63,34 @@ export function Header() {
         >
             <div className="container mx-auto max-w-7xl px-6">
                 <nav className="flex items-center justify-between h-16">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 relative">
-                            <Image
-                                src="/icon.png"
-                                alt="Platera"
-                                width={32}
-                                height={32}
-                                className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-110"
-                            />
-                        </div>
-                        <span className="text-lg font-semibold text-white tracking-widest hidden sm:block" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '0.15em' }}>
-                            Platera
-                        </span>
-                    </Link>
+                    {/* Left Section: Back Button + Logo */}
+                    <div className="flex items-center gap-4">
+                        {isRecipePage && (
+                            <Link
+                                href="/explore"
+                                className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors border border-white/5"
+                                title="Back to Explore"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </Link>
+                        )}
+
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-2 group">
+                            <div className="w-8 h-8 relative">
+                                <Image
+                                    src="/icon.png"
+                                    alt="Platera"
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-110"
+                                />
+                            </div>
+                            <span className="text-lg font-semibold text-white tracking-widest hidden sm:block" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '0.15em' }}>
+                                Platera
+                            </span>
+                        </Link>
+                    </div>
 
                     {/* Center Navigation with Dark Background */}
                     <motion.div

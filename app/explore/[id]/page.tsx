@@ -79,16 +79,7 @@ export default async function RecipeDetailsPage({ params }: PageProps) {
 
     return (
         <div className="min-h-screen bg-[#050505] text-stone-200 font-sans selection:bg-orange-500/30">
-            {/* Navigation Bar Placeholder (Back Button) */}
-            <div className="absolute top-6 left-6 z-50">
-                <Link
-                    href="/explore"
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-sm font-medium hover:bg-white/10 transition-all hover:pl-3 group"
-                >
-                    <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                    Back to Explore
-                </Link>
-            </div>
+            {/* Navigation removed, moved to Header */}
 
             {/* Hero Section */}
             <div className="relative w-full h-[60vh] md:h-[70vh]">
@@ -183,7 +174,7 @@ export default async function RecipeDetailsPage({ params }: PageProps) {
                             Ingredients
                         </h3>
                         <ul className="space-y-4">
-                            {ingredients.map((ingredient, idx) => (
+                            {ingredients.map((ingredient: string, idx: number) => (
                                 <li key={idx} className="flex items-start gap-4 p-4 rounded-xl bg-stone-900/40 border border-stone-800/40 hover:border-orange-500/30 transition-colors group">
                                     <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2.5 group-hover:scale-125 transition-transform" />
                                     <span className="text-stone-300 leading-relaxed group-hover:text-white transition-colors">{ingredient}</span>
@@ -199,7 +190,7 @@ export default async function RecipeDetailsPage({ params }: PageProps) {
                             Method
                         </h3>
                         <div className="space-y-6">
-                            {steps.map((step, idx) => (
+                            {steps.map((step: string, idx: number) => (
                                 <div key={idx} className="relative pl-8 border-l border-stone-800 hover:border-orange-500/50 transition-colors pb-8 last:pb-0 group">
                                     <span className="absolute -left-3 top-0 flex items-center justify-center w-6 h-6 rounded-full bg-[#050505] border border-stone-700 text-xs font-bold text-stone-500 group-hover:border-orange-500 group-hover:text-orange-500 transition-colors">
                                         {idx + 1}
