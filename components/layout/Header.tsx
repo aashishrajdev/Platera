@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useUser, UserButton } from '@clerk/nextjs';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Filter as FilterIcon, ListFilter, X, Star } from 'lucide-react';
 
 const navLinks = [
     { href: '/explore', label: 'Explore' },
@@ -16,15 +16,35 @@ const navLinks = [
 
 export function Header() {
     const pathname = usePathname();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const { scrollY } = useScroll();
+
+    // State
     const [hasScrolled, setHasScrolled] = useState(false);
     const [hideNav, setHideNav] = useState(false);
-    const { isSignedIn } = useUser();
     const [lastScrollTime, setLastScrollTime] = useState(Date.now());
     const [isAtTop, setIsAtTop] = useState(true);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [isSortOpen, setIsSortOpen] = useState(false);
 
-    // Check if we are on a recipe details page (e.g. /explore/RECIPE_ID)
+    const { isSignedIn } = useUser();
+
+    // Check if we are on the main explore page (strictly /explore, not subpages)
+    const isExplorePage = pathname === '/explore';
+    // Check if we are on a recipe details page
     const isRecipePage = pathname?.startsWith('/explore/') && pathname.split('/').length > 2;
+
+    // Filter Logic
+    const updateFilter = (key: string, value: string | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value) {
+            params.set(key, value);
+        } else {
+            params.delete(key);
+        }
+        router.push(`/explore?${params.toString()}`);
+    };
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious() ?? 0;
@@ -37,6 +57,9 @@ export function Header() {
         } else {
             if (latest > previous && latest > 100) {
                 setHideNav(true);
+                // Close popups on scroll
+                setIsFilterOpen(false);
+                setIsSortOpen(false);
             } else {
                 setHideNav(false);
             }
@@ -62,8 +85,8 @@ export function Header() {
             className="fixed top-0 left-0 right-0 z-50 bg-transparent"
         >
             <div className="container mx-auto max-w-7xl px-6">
-                <nav className="flex items-center justify-between h-16">
-                    {/* Left Section: Back Button + Logo */}
+                <nav className="flex items-center justify-between h-16 relative">
+                    {/* Left Section: Filter + Logo */}
                     <div className="flex items-center gap-4">
                         {isRecipePage && (
                             <Link
@@ -73,6 +96,109 @@ export function Header() {
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </Link>
+                        )}
+
+                        {/* Filter Button (Only on Explore) */}
+                        {isExplorePage && (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all border ${isFilterOpen ? 'bg-amber-600 text-white border-amber-500' : 'bg-stone-900/60 text-stone-400 border-stone-800 hover:text-white hover:bg-stone-800'}`}
+                                    title="Filter Recipes"
+                                >
+                                    {isFilterOpen ? <X className="w-5 h-5" /> : <FilterIcon className="w-5 h-5" />}
+                                </button>
+
+                                {/* Filter Popup */}
+                                <AnimatePresence>
+                                    {isFilterOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute top-12 left-0 w-80 p-5 bg-stone-950/95 backdrop-blur-xl border border-stone-800 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50"
+                                        >
+                                            <div className="space-y-6">
+                                                {/* Header */}
+                                                <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+                                                    <span className="font-display font-semibold text-white text-lg">Filters</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            router.push('/explore');
+                                                            setIsFilterOpen(false);
+                                                        }}
+                                                        className="text-xs text-amber-500 hover:text-amber-400 font-medium tracking-wide uppercase"
+                                                    >
+                                                        Reset All
+                                                    </button>
+                                                </div>
+
+                                                {/* Categories */}
+                                                <div className="space-y-3">
+                                                    <label className="text-xs text-stone-500 font-medium uppercase tracking-wider">Category</label>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {[
+                                                            { value: 'VEG', label: 'Vegetarian' },
+                                                            { value: 'NON_VEG', label: 'Non-Veg' },
+                                                            { value: 'EGG', label: 'Contains Egg' },
+                                                        ].map((cat) => {
+                                                            const isActive = searchParams.get('category') === cat.value;
+                                                            return (
+                                                                <button
+                                                                    key={cat.value}
+                                                                    onClick={() => updateFilter('category', isActive ? null : cat.value)}
+                                                                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all text-left ${isActive
+                                                                        ? 'bg-amber-900/30 text-amber-500 border border-amber-800/50'
+                                                                        : 'bg-stone-900/50 text-stone-400 border border-stone-800 hover:bg-stone-900 hover:text-stone-200'
+                                                                        }`}
+                                                                >
+                                                                    {cat.label}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+
+                                                {/* Time */}
+                                                <div className="space-y-3">
+                                                    <label className="text-xs text-stone-500 font-medium uppercase tracking-wider">Max Time</label>
+                                                    <div className="flex gap-2">
+                                                        {['30', '60'].map((time) => {
+                                                            const isActive = searchParams.get('maxTime') === time;
+                                                            return (
+                                                                <button
+                                                                    key={time}
+                                                                    onClick={() => updateFilter('maxTime', isActive ? null : time)}
+                                                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive
+                                                                        ? 'bg-stone-100 text-stone-900'
+                                                                        : 'bg-stone-900/50 text-stone-400 border border-stone-800 hover:bg-stone-900'
+                                                                        }`}
+                                                                >
+                                                                    &lt; {time} min
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+
+                                                {/* Rating */}
+                                                <div className="pt-2">
+                                                    <button
+                                                        onClick={() => updateFilter('minRating', searchParams.get('minRating') ? null : '4')}
+                                                        className={`w-full px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all ${searchParams.get('minRating')
+                                                            ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/40'
+                                                            : 'bg-stone-900 text-stone-400 border border-stone-800 hover:bg-stone-800'
+                                                            }`}
+                                                    >
+                                                        <Star className={`w-4 h-4 ${searchParams.get('minRating') ? 'fill-white' : ''}`} />
+                                                        <span className="font-medium">4+ Stars Only</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         )}
 
                         {/* Logo */}
@@ -166,8 +292,8 @@ export function Header() {
                         </div>
                     </motion.div>
 
-                    {/* Auth */}
-                    <div className="flex items-center">
+                    {/* Auth + Sort (Right Side) */}
+                    <div className="flex items-center gap-4">
                         {isSignedIn ? (
                             <UserButton
                                 afterSignOutUrl="/"
@@ -187,6 +313,54 @@ export function Header() {
                                     Sign In
                                 </button>
                             </Link>
+                        )}
+
+                        {/* Sort Button (Only on Explore) - Placed after Profile/Sign In */}
+                        {isExplorePage && (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsSortOpen(!isSortOpen)}
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all border ${isSortOpen ? 'bg-stone-100 text-stone-900 border-white' : 'bg-stone-900/60 text-stone-400 border-stone-800 hover:text-white hover:bg-stone-800'}`}
+                                >
+                                    <ListFilter className="w-4 h-4" />
+                                    <span className="text-sm font-medium hidden sm:block">Sort</span>
+                                </button>
+
+                                {/* Sort Menu */}
+                                <AnimatePresence>
+                                    {isSortOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute top-12 right-0 w-48 py-2 bg-stone-950/95 backdrop-blur-xl border border-stone-800 rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-50"
+                                        >
+                                            <div className="flex flex-col">
+                                                <span className="px-4 py-2 text-xs font-semibold text-stone-500 uppercase tracking-wider">Sort Order</span>
+                                                {[
+                                                    { value: 'newest', label: 'Newest First' },
+                                                    { value: 'topRated', label: 'Highest Rated' },
+                                                    { value: 'mostSaved', label: 'Most Popular' },
+                                                ].map((option) => (
+                                                    <button
+                                                        key={option.value}
+                                                        onClick={() => {
+                                                            updateFilter('sortBy', option.value);
+                                                            setIsSortOpen(false);
+                                                        }}
+                                                        className={`px-4 py-2.5 text-sm text-left hover:bg-stone-900 transition-colors ${searchParams.get('sortBy') === option.value || (!searchParams.get('sortBy') && option.value === 'newest')
+                                                            ? 'text-amber-500 font-medium'
+                                                            : 'text-stone-300'
+                                                            }`}
+                                                    >
+                                                        {option.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         )}
                     </div>
                 </nav>
