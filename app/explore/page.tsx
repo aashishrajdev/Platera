@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChefHat, Star, Clock, Sparkles } from 'lucide-react';
@@ -26,7 +26,7 @@ interface Recipe {
     };
 }
 
-export default function ExplorePage() {
+function ExploreContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -192,6 +192,15 @@ export default function ExplorePage() {
                 </div>
             </section>
         </div>
+    );
+
+}
+
+export default function ExplorePage() {
+    return (
+        <Suspense fallback={<LoadingGrid />}>
+            <ExploreContent />
+        </Suspense>
     );
 }
 
