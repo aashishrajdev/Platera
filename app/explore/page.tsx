@@ -139,7 +139,6 @@ function ExploreContent() {
                         </motion.p>
                     </div>
 
-
                 </div>
             </section>
 

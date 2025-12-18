@@ -28,6 +28,29 @@ function HeaderContent() {
     const [isSortOpen, setIsSortOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Sync search input with URL
+    useEffect(() => {
+        setSearchQuery(searchParams.get('search') || '');
+    }, [searchParams]);
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+
+        // Debounce URL update
+        const timeoutId = setTimeout(() => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (value) {
+                params.set('search', value);
+            } else {
+                params.delete('search');
+            }
+            router.push(`/explore?${params.toString()}`);
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    };
+
     const { isSignedIn } = useUser();
 
     // Check if we are on the main explore page (strictly /explore, not subpages)
@@ -74,35 +97,8 @@ function HeaderContent() {
                 setHideNav(true);
             }
         }, 500);
+        return () => clearInterval(interval);
     }, [hideNav, lastScrollTime, isAtTop]);
-
-    // Sync search query from URL
-    useEffect(() => {
-        const query = searchParams.get('search');
-        if (query) {
-            setSearchQuery(query);
-        } else {
-            setSearchQuery('');
-        }
-    }, [searchParams]);
-
-    // Handle Search
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchQuery(value);
-
-        const timeoutId = setTimeout(() => {
-            const params = new URLSearchParams(searchParams.toString());
-            if (value) {
-                params.set('search', value);
-            } else {
-                params.delete('search');
-            }
-            router.push(`/explore?${params.toString()}`);
-        }, 500);
-
-        return () => clearTimeout(timeoutId);
-    };
 
     // Filter nav links (Hide Explore on Home)
     const filteredNavLinks = navLinks.filter(link => {
@@ -253,13 +249,15 @@ function HeaderContent() {
                         {/* Search Bar (Only on Explore) */}
                         {isExplorePage && (
                             <div className="relative group ml-4 hidden md:block">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 group-focus-within:text-amber-500 transition-colors" />
+                                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                    <Search className="w-4 h-4 text-stone-500 group-focus-within:text-amber-500 transition-colors" />
+                                </div>
                                 <input
                                     type="text"
                                     placeholder="Search recipes..."
                                     value={searchQuery}
                                     onChange={handleSearch}
-                                    className="pl-9 pr-4 py-2 bg-stone-900/60 border border-stone-800 rounded-full text-sm text-stone-200 placeholder:text-stone-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all w-48 focus:w-64"
+                                    className="pl-10 pr-4 py-2 w-64 bg-stone-900/50 border border-stone-800 rounded-full text-sm text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all backdrop-blur-sm"
                                 />
                             </div>
                         )}
@@ -447,8 +445,8 @@ function HeaderContent() {
                         )}
                     </div>
                 </nav>
-            </div>
-        </motion.header>
+            </div >
+        </motion.header >
     );
 
 }
