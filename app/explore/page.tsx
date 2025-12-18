@@ -361,23 +361,25 @@ function ExploreContent() {
                 </AnimatePresence>
               </div>
 
-              {/* Sort: button with dropdown content */}
-              <div className="relative" ref={sortRef}>
-                <button
-                  onClick={() => setShowSortPanel((v) => !v)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all border ${
-                    showSortPanel
-                      ? "bg-stone-100 text-stone-900 border-white"
-                      : "bg-stone-900/60 text-stone-400 border-stone-800 hover:text-white hover:bg-stone-800"
-                  }`}
-                  aria-haspopup="menu"
-                  aria-expanded={showSortPanel}
-                >
-                  <ListFilter className="w-4 h-4" />
-                  <span className="text-sm font-medium hidden sm:block">
-                    Sort
-                  </span>
-                </button>
+                    {/* Title */}
+                    <div className="space-y-4">
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="text-5xl md:text-7xl font-display font-medium text-white tracking-tight"
+                        >
+                            Culinary <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-amber-300 to-amber-500">Excellence</span>
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-lg md:text-xl text-stone-400 font-light max-w-2xl mx-auto leading-relaxed"
+                        >
+                            Explore a curated selection of exquisite recipes crafted by our community of passionate chefs.
+                        </motion.p>
+                    </div>
 
                 <AnimatePresence>
                   {showSortPanel && (

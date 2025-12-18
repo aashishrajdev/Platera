@@ -146,11 +146,7 @@ export function RecipeCard({ recipe, priority = false, isSaved = false, onToggle
                         </h3>
 
                         {/* Description */}
-                        {recipe.description && (
-                            <p className="text-sm text-neutral-300 line-clamp-2 mb-4 leading-relaxed">
-                                {recipe.description}
-                            </p>
-                        )}
+
 
                         {/* Meta Row */}
                         <div className="flex items-center justify-between">
@@ -173,7 +169,7 @@ export function RecipeCard({ recipe, priority = false, isSaved = false, onToggle
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-neutral-500 uppercase tracking-wider">Chef</p>
+
                                     <p className="text-sm font-medium text-white">{recipe.author.name}</p>
                                 </div>
                             </div>
