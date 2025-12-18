@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useUser, UserButton } from '@clerk/nextjs';
-import { ChevronLeft, Filter as FilterIcon, ListFilter, X, Star } from 'lucide-react';
+import { ChevronLeft, Filter as FilterIcon, ListFilter, X, Star, Search } from 'lucide-react';
 import { dark } from '@clerk/themes';
 
 const navLinks = [
@@ -26,6 +26,7 @@ function HeaderContent() {
     const [isAtTop, setIsAtTop] = useState(true);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const { isSignedIn } = useUser();
 
@@ -73,8 +74,35 @@ function HeaderContent() {
                 setHideNav(true);
             }
         }, 500);
-        return () => clearInterval(interval);
     }, [hideNav, lastScrollTime, isAtTop]);
+
+    // Sync search query from URL
+    useEffect(() => {
+        const query = searchParams.get('search');
+        if (query) {
+            setSearchQuery(query);
+        } else {
+            setSearchQuery('');
+        }
+    }, [searchParams]);
+
+    // Handle Search
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+
+        const timeoutId = setTimeout(() => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (value) {
+                params.set('search', value);
+            } else {
+                params.delete('search');
+            }
+            router.push(`/explore?${params.toString()}`);
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    };
 
     // Filter nav links (Hide Explore on Home)
     const filteredNavLinks = navLinks.filter(link => {
@@ -221,6 +249,20 @@ function HeaderContent() {
                                 Platera
                             </span>
                         </Link>
+
+                        {/* Search Bar (Only on Explore) */}
+                        {isExplorePage && (
+                            <div className="relative group ml-4 hidden md:block">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 group-focus-within:text-amber-500 transition-colors" />
+                                <input
+                                    type="text"
+                                    placeholder="Search recipes..."
+                                    value={searchQuery}
+                                    onChange={handleSearch}
+                                    className="pl-9 pr-4 py-2 bg-stone-900/60 border border-stone-800 rounded-full text-sm text-stone-200 placeholder:text-stone-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all w-48 focus:w-64"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Center Navigation with Dark Background */}

@@ -139,25 +139,7 @@ function ExploreContent() {
                         </motion.p>
                     </div>
 
-                    {/* Search Bar - Luxurious Input */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="max-w-xl mx-auto relative group"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-sepia-500/20 to-amber-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                        <div className="relative">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 group-focus-within:text-amber-500 transition-colors" />
-                            <input
-                                type="text"
-                                placeholder="Search for recipes, ingredients, or chefs..."
-                                value={localSearchQuery}
-                                onChange={handleSearch}
-                                className="w-full pl-14 pr-6 py-4 bg-stone-900/80 border border-stone-800 rounded-2xl focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 focus:outline-none transition-all backdrop-blur-md text-stone-200 placeholder:text-stone-600 font-sans"
-                            />
-                        </div>
-                    </motion.div>
+
                 </div>
             </section>
 
