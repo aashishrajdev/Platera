@@ -105,3 +105,54 @@ export async function getCurrentUser() {
 
     return user;
 }
+
+/**
+ * Sync user from Clerk Webhook data
+ */
+export async function syncUserFromClerk(data: any) {
+    const email = data.email_addresses?.[0]?.email_address;
+    if (!email) return;
+
+    try {
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (existingUser) {
+            await prisma.user.update({
+                where: { id: existingUser.id },
+                data: {
+                    clerkId: data.id,
+                    name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || 'Chef',
+                    profileImage: data.image_url
+                }
+            });
+        } else {
+            await prisma.user.create({
+                data: {
+                    clerkId: data.id,
+                    email: email,
+                    name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || 'Chef',
+                    profileImage: data.image_url
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error syncing user from Clerk:', error);
+        throw error;
+    }
+}
+
+/**
+ * Delete user from database when deleted in Clerk
+ */
+export async function deleteUserFromDatabase(clerkId: string) {
+    try {
+        await prisma.user.deleteMany({
+            where: { clerkId }
+        });
+    } catch (error) {
+        console.error('Error deleting user from database:', error);
+        throw error;
+    }
+}

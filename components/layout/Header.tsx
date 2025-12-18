@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useUser, UserButton } from '@clerk/nextjs';
 import { ChevronLeft, Filter as FilterIcon, ListFilter, X, Star } from 'lucide-react';
 import { dark } from '@clerk/themes';
@@ -13,7 +13,7 @@ const navLinks = [
     { href: '/explore', label: 'Explore' },
 ];
 
-export function Header() {
+function HeaderContent() {
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -407,5 +407,14 @@ export function Header() {
                 </nav>
             </div>
         </motion.header>
+    );
+
+}
+
+export function Header() {
+    return (
+        <Suspense fallback={null}>
+            <HeaderContent />
+        </Suspense>
     );
 }
