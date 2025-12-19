@@ -80,7 +80,7 @@ function ExploreContent() {
         filterRef.current &&
         !filterRef.current.contains(target)
       ) {
-        setShowFilterPanel(false);
+        // setShowFilterPanel(false); // Don't close merely by clicking outside if it's a modal, usually handled by backdrop click
       }
     }
     document.addEventListener("mousedown", onClickOutside);
@@ -182,8 +182,6 @@ function ExploreContent() {
         </div>
       </section>
 
-
-
       {/* Search & Filter Section */}
       <section className="sticky top-16 z-[60] transition-all duration-300">
 
@@ -208,7 +206,7 @@ function ExploreContent() {
 
             {/* Actions (right): Filter + Sort */}
             <div className="flex items-center gap-3">
-              {/* Filter: header-style button and popup */}
+              {/* Filter: header-style button */}
               <div className="relative" ref={filterRef}>
                 <button
                   onClick={() => setShowFilterPanel(!showFilterPanel)}
@@ -224,135 +222,6 @@ function ExploreContent() {
                     <Filter className="w-5 h-5" />
                   )}
                 </button>
-
-                {/* Filter Popup */}
-                <AnimatePresence>
-                  {showFilterPanel && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute top-12 left-0 w-80 p-5 bg-stone-950/95 backdrop-blur-xl border border-stone-800 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50"
-                    >
-                      <div className="space-y-6">
-                        {/* Header */}
-                        <div className="flex items-center justify-between border-b border-stone-800 pb-3">
-                          <span className="font-display font-semibold text-white text-lg">
-                            Filters
-                          </span>
-                          <button
-                            onClick={() => {
-                              router.push("/explore");
-                              setShowFilterPanel(false);
-                            }}
-                            className="text-xs text-amber-500 hover:text-amber-400 font-medium tracking-wide uppercase"
-                          >
-                            Reset All
-                          </button>
-                        </div>
-
-                        {/* Categories */}
-                        <div className="space-y-3">
-                          <label className="text-xs text-stone-500 font-medium uppercase tracking-wider">
-                            Category
-                          </label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {[
-                              { value: "VEG", label: "Vegetarian" },
-                              { value: "NON_VEG", label: "Non-Veg" },
-                              { value: "EGG", label: "Contains Egg" },
-                            ].map((cat) => {
-                              const isActive =
-                                searchParams.get("category") === cat.value;
-                              return (
-                                <button
-                                  key={cat.value}
-                                  onClick={() => {
-                                    const params = new URLSearchParams(
-                                      searchParams.toString()
-                                    );
-                                    if (isActive) params.delete("category");
-                                    else params.set("category", cat.value);
-                                    router.replace(
-                                      `/explore?${params.toString()}`
-                                    );
-                                  }}
-                                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all text-left ${isActive
-                                    ? "bg-amber-900/30 text-amber-500 border border-amber-800/50"
-                                    : "bg-stone-900/50 text-stone-400 border border-stone-800 hover:bg-stone-900 hover:text-stone-200"
-                                    }`}
-                                >
-                                  {cat.label}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Time */}
-                        <div className="space-y-3">
-                          <label className="text-xs text-stone-500 font-medium uppercase tracking-wider">
-                            Max Time
-                          </label>
-                          <div className="flex gap-2">
-                            {["30", "60"].map((time) => {
-                              const isActive =
-                                searchParams.get("maxTime") === time;
-                              return (
-                                <button
-                                  key={time}
-                                  onClick={() => {
-                                    const params = new URLSearchParams(
-                                      searchParams.toString()
-                                    );
-                                    if (isActive) params.delete("maxTime");
-                                    else params.set("maxTime", time);
-                                    router.replace(
-                                      `/explore?${params.toString()}`
-                                    );
-                                  }}
-                                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive
-                                    ? "bg-stone-100 text-stone-900"
-                                    : "bg-stone-900/50 text-stone-400 border border-stone-800 hover:bg-stone-900"
-                                    }`}
-                                >
-                                  &lt; {time} min
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Rating */}
-                        <div className="pt-2">
-                          <button
-                            onClick={() => {
-                              const params = new URLSearchParams(
-                                searchParams.toString()
-                              );
-                              if (params.get("minRating"))
-                                params.delete("minRating");
-                              else params.set("minRating", "4");
-                              router.replace(`/explore?${params.toString()}`);
-                            }}
-                            className={`w-full px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all ${searchParams.get("minRating")
-                              ? "bg-amber-600 text-white shadow-lg shadow-amber-900/40"
-                              : "bg-stone-900 text-stone-400 border border-stone-800 hover:bg-stone-800"
-                              }`}
-                          >
-                            <Star
-                              className={`w-4 h-4 ${searchParams.get("minRating")
-                                ? "fill-white"
-                                : ""
-                                }`}
-                            />
-                            <span className="font-medium">4+ Stars Only</span>
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
 
               {/* Sort: button with dropdown content */}
@@ -452,6 +321,165 @@ function ExploreContent() {
           )}
         </div>
       </section>
+
+      {/* Filter Modal - Moved to root to avoid stacking context issues */}
+      <AnimatePresence>
+        {showFilterPanel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            {/* Backdrop click to close */}
+            <div
+              className="absolute inset-0 z-0"
+              onClick={() => setShowFilterPanel(false)}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative z-10 w-full max-w-lg bg-stone-950 border border-stone-800 rounded-3xl shadow-2xl shadow-black/50 overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-5 border-b border-stone-800 bg-stone-900/30">
+                <h2 className="font-display font-medium text-xl text-white">
+                  Refine Results
+                </h2>
+                <button
+                  onClick={() => setShowFilterPanel(false)}
+                  className="p-2 rounded-full hover:bg-stone-800 text-stone-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 space-y-8">
+                {/* Categories */}
+                <div className="space-y-3">
+                  <label className="text-xs text-stone-500 font-medium uppercase tracking-wider">
+                    Category
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: "VEG", label: "Vegetarian" },
+                      { value: "NON_VEG", label: "Non-Veg" },
+                      { value: "EGG", label: "Contains Egg" },
+                    ].map((cat) => {
+                      const isActive =
+                        searchParams.get("category") === cat.value;
+                      return (
+                        <button
+                          key={cat.value}
+                          onClick={() => {
+                            const params = new URLSearchParams(
+                              searchParams.toString()
+                            );
+                            if (isActive) params.delete("category");
+                            else params.set("category", cat.value);
+                            router.replace(
+                              `/explore?${params.toString()}`
+                            );
+                          }}
+                          className={`px-3 py-3 rounded-xl text-sm font-medium transition-all text-left ${isActive
+                            ? "bg-amber-900/30 text-amber-500 border border-amber-800/50"
+                            : "bg-stone-900/50 text-stone-400 border border-stone-800 hover:bg-stone-900 hover:text-stone-200"
+                            }`}
+                        >
+                          {cat.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Time */}
+                <div className="space-y-3">
+                  <label className="text-xs text-stone-500 font-medium uppercase tracking-wider">
+                    Max Time
+                  </label>
+                  <div className="flex gap-2">
+                    {["30", "60"].map((time) => {
+                      const isActive =
+                        searchParams.get("maxTime") === time;
+                      return (
+                        <button
+                          key={time}
+                          onClick={() => {
+                            const params = new URLSearchParams(
+                              searchParams.toString()
+                            );
+                            if (isActive) params.delete("maxTime");
+                            else params.set("maxTime", time);
+                            router.replace(
+                              `/explore?${params.toString()}`
+                            );
+                          }}
+                          className={`flex-1 px-3 py-3 rounded-xl text-sm font-medium transition-all ${isActive
+                            ? "bg-stone-100 text-stone-900"
+                            : "bg-stone-900/50 text-stone-400 border border-stone-800 hover:bg-stone-900"
+                            }`}
+                        >
+                          &lt; {time} min
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Rating */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      const params = new URLSearchParams(
+                        searchParams.toString()
+                      );
+                      if (params.get("minRating"))
+                        params.delete("minRating");
+                      else params.set("minRating", "4");
+                      router.replace(`/explore?${params.toString()}`);
+                    }}
+                    className={`w-full px-4 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all ${searchParams.get("minRating")
+                      ? "bg-amber-600 text-white shadow-lg shadow-amber-900/40"
+                      : "bg-stone-900 text-stone-400 border border-stone-800 hover:bg-stone-800"
+                      }`}
+                  >
+                    <Star
+                      className={`w-4 h-4 ${searchParams.get("minRating")
+                        ? "fill-white"
+                        : ""
+                        }`}
+                    />
+                    <span className="font-medium">4+ Stars Only</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 border-t border-stone-800 bg-stone-900/30 flex gap-3">
+                <button
+                  onClick={() => {
+                    router.push("/explore");
+                    setShowFilterPanel(false);
+                  }}
+                  className="flex-1 px-4 py-3 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800 transition-colors font-medium"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => setShowFilterPanel(false)}
+                  className="flex-[2] px-4 py-3 rounded-xl bg-white text-black font-bold hover:bg-stone-200 transition-colors"
+                >
+                  Show Results
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

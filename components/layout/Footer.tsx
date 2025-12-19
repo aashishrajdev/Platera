@@ -64,7 +64,7 @@ export function Footer() {
                             <Instagram className="w-4 h-4" strokeWidth={1.5} />
                         </a>
                         <a
-                            href="https://linkedin.com/company/platera"
+                            href="https://linkedin.com/company/platera-app"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-stone-600 hover:text-brand-500 opacity-80 hover:opacity-100 hover:-translate-y-0.5 transition-all duration-200"
